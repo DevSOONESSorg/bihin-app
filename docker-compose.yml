@@ -3,7 +3,6 @@
 services:
   app:
     build: .
-    container_name: ${APP_NAME:-bihin-app}
     ports:
       - "${PORT:-3000}:3000"        # 左がPC側のポート（.envで変更できる）
     volumes:
