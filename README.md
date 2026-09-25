@@ -52,39 +52,118 @@
 
 ### 必要なもの
 
-- **Docker Desktop**（Windows / Mac）がインストールされ、起動していること
-- このリポジトリの中身（zipでダウンロードして解凍、または `git clone`）
+- **Docker Desktop**（Windows / Mac）：インストールして**起動しておく**（画面上部のメニューバー／タスクバーにクジラのアイコンが出ていればOK）
+- **Git**：ダウンロードに使います（なければ下の「方法B：zipでダウンロード」でもOK）
 
-### 手順
+### 最短手順（慣れている人向け）
 
-1. ターミナル（Windowsは PowerShell、Macは ターミナル）を開く
-2. このフォルダに移動する
+```bash
+git clone https://github.com/DevSOONESSorg/bihin-app.git
+cd bihin-app
+docker compose up
+```
+
+起動したら、ブラウザで <http://localhost:3000> を開きます。
+
+---
+
+### 手順（くわしく）
+
+#### ① ターミナルを開く
+
+| OS | 開き方 |
+|---|---|
+| Windows | スタートメニューで「PowerShell」と入力して開く |
+| Mac | `Command + Space` で Spotlight を開き、「ターミナル」と入力して開く |
+
+#### ② 置き場所のフォルダに移動する
+
+どこに置いてもかまいませんが、迷ったら「デスクトップ」にしましょう。
+
+```bash
+cd ~/Desktop
+```
+
+> Windows で OneDrive を使っている場合は、デスクトップが `~/OneDrive/Desktop` にあることがあります。うまく移動できないときはこちらを試してください。
+
+#### ③ アプリをダウンロードする
+
+**方法A：git clone（おすすめ）**
+
+1. このリンクをコピーします
+
+   ```
+   https://github.com/DevSOONESSorg/bihin-app.git
+   ```
+
+2. ターミナルに `git clone ` と入力します（**clone のあとに半角スペース**を1つ入れる）
+3. 続けて、コピーしたリンクを貼り付けます
+   - Windows（PowerShell）：`Ctrl + V` または **右クリック**
+   - Mac：`Command + V`
+4. 次のようになっていれば、`Enter` を押します
 
    ```bash
-   cd bihin-app
+   git clone https://github.com/DevSOONESSorg/bihin-app.git
    ```
 
-3. 起動する（初回はイメージの作成に1〜2分かかります）
+5. `bihin-app` というフォルダができればダウンロード完了です
 
-   ```bash
-   docker compose up
-   ```
+> `git: command not found`（Macでは「開発者ツールをインストールしますか？」という画面）が出たら、Git がまだ入っていません。Mac はその画面で「インストール」を押せば入ります。Windows は <https://git-scm.com/> からインストールするか、方法Bを使ってください。
 
-4. 次の行が出たら起動完了です
+**方法B：zipでダウンロード**
 
-   ```
-   備品貸出管理 を起動しました → http://localhost:3000
-   ```
+1. ブラウザで <https://github.com/DevSOONESSorg/bihin-app> を開く
+2. 緑色の **「Code」** ボタン →「**Download ZIP**」をクリック
+3. ダウンロードした zip をデスクトップに移して解凍する
+4. できたフォルダ名が `bihin-app-main` になっていたら、`bihin-app` に変えておく
 
-5. ブラウザで <http://localhost:3000> を開く
+#### ④ アプリのフォルダに移動する
+
+```bash
+cd bihin-app
+```
+
+次のコマンドで中身を確認し、`docker-compose.yml` や `README.md` が表示されれば正しい場所にいます。
+
+```bash
+ls
+```
+
+#### ⑤ 起動する（初回はイメージの作成に1〜2分かかります）
+
+```bash
+docker compose up
+```
+
+#### ⑥ 起動を確認する
+
+ターミナルに次の行が出たら起動完了です。
+
+```
+備品貸出管理 を起動しました → http://localhost:3000
+```
+
+ブラウザで <http://localhost:3000> を開き、備品一覧の画面が出れば成功です。
+
+> 起動中は、このターミナルを**閉じないでください**（閉じるとアプリも止まります）。ほかの作業をするときは、新しいターミナルを開きましょう。
 
 ### 止め方
 
-ターミナルで `Ctrl + C` を押したあと、
+アプリを動かしているターミナルで `Ctrl + C`（Macも同じ `Ctrl`）を押したあと、
 
 ```bash
 docker compose down
 ```
+
+### 2回目以降の起動
+
+ダウンロード（③）は最初の1回だけで大丈夫です。2回目からは、フォルダに移動して起動するだけです。
+
+```bash
+cd ~/Desktop/bihin-app
+docker compose up
+```
+
 
 ### コードを直したとき
 
