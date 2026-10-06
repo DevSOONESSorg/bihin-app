@@ -64,34 +64,112 @@
 | ブラウザ | Chrome または Edge。開発者ツール（F12）を使います |
 | ターミナル | Windows は PowerShell、Mac は ターミナル |
 
-### ダウンロード
+### 最短手順（慣れている人向け）
 
-Git を知らなくても大丈夫です。このページ上部の緑の **Code** ボタン → **Download ZIP**。解凍してできた `bihin-app-main` フォルダを作業場所（例：デスクトップ）に置き、**フォルダ名を自分の名前入りに変えます**（半角英数字で。例：`taiken-yamada`）。
+```bash
+git clone https://github.com/DevSOONESSorg/bihin-app.git taiken-yamada   # 自分の名前入りで
+cd taiken-yamada
+docker compose up
+```
 
-Git が使える人は `git clone https://github.com/DevSOONESSorg/bihin-app.git taiken-yamada` でも構いません。
+起動したらブラウザで http://localhost:3000 を開きます。くわしい手順が要らない人は [止める・直す・戻す](#止める直す戻す) へ。
 
-### 起動
+### 手順（くわしく）
+
+#### ① ターミナルを開く
+
+| OS | 開き方 |
+|---|---|
+| Windows | スタートメニューで「PowerShell」と入力して開く |
+| Mac | `Command + Space` で Spotlight を開き、「ターミナル」と入力して開く |
+
+#### ② 置き場所のフォルダに移動する
+
+どこに置いてもかまいませんが、迷ったら「デスクトップ」にしましょう。
+
+```bash
+cd ~/Desktop
+```
+
+> Windows で OneDrive を使っている場合、デスクトップが `~/OneDrive/Desktop` にあることがあります。うまく移動できないときはこちらを試してください。
+
+#### ③ アプリをダウンロードして、自分の名前を付ける
+
+**方法A：git clone（おすすめ）**
+
+1. 次のリンクをコピーします
+
+   ```
+   https://github.com/DevSOONESSorg/bihin-app.git
+   ```
+
+2. ターミナルに `git clone ` と入力します（**clone のあとに半角スペース**を1つ）
+3. 続けてリンクを貼り付けます（Windows：`Ctrl + V` または右クリック／Mac：`Command + V`）
+4. さらに半角スペースを入れて、自分の名前入りのフォルダ名（半角英数字）を付け、`Enter`
+
+   ```bash
+   git clone https://github.com/DevSOONESSorg/bihin-app.git taiken-yamada
+   ```
+
+5. `taiken-yamada` というフォルダができればダウンロード完了です
+
+> `git: command not found`（Mac では「開発者ツールをインストールしますか？」という画面）が出たら、Git がまだ入っていません。Mac はその画面で「インストール」を押せば入ります。Windows は https://git-scm.com/ からインストールするか、方法Bを使ってください。
+
+**方法B：zip でダウンロード**
+
+1. ブラウザで https://github.com/DevSOONESSorg/bihin-app を開く
+2. 緑色の **Code** ボタン → **Download ZIP**
+3. ダウンロードした zip をデスクトップに移して解凍する
+4. できたフォルダ名 `bihin-app-main` を、自分の名前入り（例：`taiken-yamada`）に変える
+
+> フォルダ名は半角英数字にしてください。日本語だと Docker が起動できません。
+
+#### ④ アプリのフォルダに移動する
+
+```bash
+cd taiken-yamada
+```
+
+次のコマンドで中身を確認し、`docker-compose.yml` や `README.md` が表示されれば正しい場所にいます。
+
+```bash
+ls
+```
+
+#### ⑤ 起動する（初回はイメージの作成に1〜2分かかります）
 
 Docker Desktop が起動している（クジラのアイコンが running）ことを確認してから：
 
 ```bash
-cd taiken-yamada        # 自分のフォルダへ
 docker compose up
 ```
 
-初回は1〜2分かかります。次の行が出たら、ブラウザで http://localhost:3000 を開きます。
+#### ⑥ 起動を確認する
+
+ターミナルに次の行が出たら起動完了です。
 
 ```
 備品貸出管理 を起動しました → http://localhost:3000
 ```
 
-サンプルの備品8件（延滞1件を含む）が入った状態で表示されます。
+ブラウザで http://localhost:3000 を開き、備品一覧（サンプル8件、延滞1件）が出れば成功です。
+
+> 起動中は、このターミナルを**閉じないでください**（閉じるとアプリも止まります）。ほかの作業をするときは、新しいターミナルを開きましょう。
+
+#### 2回目以降の起動
+
+ダウンロード（③）は最初の1回だけです。2回目からは、フォルダに移動して起動するだけ。
+
+```bash
+cd ~/Desktop/taiken-yamada
+docker compose up
+```
 
 ### 止める・直す・戻す
 
 | したいこと | やること |
 |---|---|
-| 止める | ターミナルで `Ctrl + C` → `docker compose down` |
+| 止める | アプリを動かしているターミナルで `Ctrl + C`（Mac も `Ctrl`）→ `docker compose down` |
 | コードを直した | **何もしなくてよい。** 保存すると自動で再起動します（ターミナルに `Restarting`）。ブラウザを再読み込み |
 | `package.json` を変えた | パッケージを追加したときだけ `docker compose up --build` |
 | データを最初に戻す | 止めてから `docker compose run --rm app npm run reset`。または `data/bihin.db` を削除。次回起動時にサンプルが入り直す |
@@ -604,6 +682,21 @@ console.table(db.prepare('SELECT id, name, location, status FROM items').all());
 1. **自分のフォルダを zip にしたもの**（例：`taiken-yamada.zip`）。コードとデータ（`data/bihin.db`）が入る
 2. **報告文**（下のテンプレ）。Slack の体験チャンネルに zip と一緒に投稿
 3. Lv2 以上をやった人は **設計メモ**（紙なら写真）
+
+### カードごとに小さく提出してもよい（おすすめ）
+
+1枚のカードが終わるたびに提出すると、変更が混ざらず確認しやすくなります。Slack に次の3つを投稿してください。
+
+1. **画面キャプチャ**：変更した機能が動いている画面（変更前・変更後の2枚があるとベスト）
+2. **変更内容**：git clone した人は、アプリのフォルダで次を実行すると変更の差分が `kadai_Lv1-1.txt` に保存されます（カード名に合わせてファイル名を変える）。zip でダウンロードした人は、変更したファイルをそのまま添付
+
+   ```bash
+   git diff > kadai_Lv1-1.txt
+   ```
+
+3. **作業報告（3行）**：どのファイルを変えたか／どう確認したか（何を操作してどうなったか）／難しかったところ
+
+最終日には、下の「提出するもの」でまとめて提出します。
 
 ### zip の作り方
 
