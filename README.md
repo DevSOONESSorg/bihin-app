@@ -170,7 +170,7 @@ docker compose up
 | したいこと | やること |
 |---|---|
 | 止める | アプリを動かしているターミナルで `Ctrl + C`（Mac も `Ctrl`）→ `docker compose down` |
-| コードを直した | **何もしなくてよい。** 保存すると自動で再起動します（ターミナルに `Restarting`）。ブラウザを再読み込み |
+| コードを直した | **何もしなくてよい。** 保存すると自動で再起動します（ターミナルに `[nodemon] restarting due to changes...`）。ブラウザを再読み込み。Windows で自動再起動しないときは[8章](#8-よくあるエラーと対処)を参照 |
 | `package.json` を変えた | パッケージを追加したときだけ `docker compose up --build` |
 | データを最初に戻す | 止めてから `docker compose run --rm app npm run reset`。または `data/bihin.db` を削除。次回起動時にサンプルが入り直す |
 
@@ -612,7 +612,7 @@ SQLite で `data/bihin.db` の1ファイル。テーブルは2つ。
 
 `docker compose up` しているターミナルにエラーの全文が出ます。赤い文字の最初の数行に **ファイル名と行番号** があります（例：`at /app/src/routes/items.js:63:21` → items.js の63行目）。まずそこを開く。
 
-値を確かめたいときは `console.log` を1行入れて保存（自動で再起動）。ブラウザで操作するとターミナルに値が出ます。
+値を確かめたいときは `console.log` を1行入れて保存（自動で再起動。されないときは `docker compose restart app`）。ブラウザで操作するとターミナルに値が出ます。
 
 ```js
 router.post('/', (req, res) => {
@@ -638,14 +638,22 @@ Status の読み方：200＝正常表示、302＝別ページへ移動（保存�
 
 ### 道具3：データベースの中身を直接見る
 
-VS Code の拡張機能 **SQLite Viewer** で `data/bihin.db` を開くと表として見られます。コマンドなら：
+VS Code の拡張機能 **SQLite Viewer** で `data/bihin.db` を開くと表として見られます（書き換えもできる）。
 
-```bash
-docker compose exec app node -e "
+コマンドで見たり直したりしたいときは、引用符の入れ子で失敗しやすいので一行コマンドではなく **小さなスクリプトファイル** にします。プロジェクト直下に `check.js` を作り：
+
+```js
 const db = require('better-sqlite3')('data/bihin.db');
 console.table(db.prepare('SELECT id, name, location, status FROM items').all());
-"
+// データを直したいときは例えば：
+// db.prepare("UPDATE items SET status = 'available' WHERE id = ?").run(9);
 ```
+
+```bash
+docker compose exec app node check.js
+```
+
+用が済んだら `check.js` は削除してください。「データ修正は使い捨てのスクリプトにして流す」のは実務でも定番のやり方で、何をしたかが残ります。
 
 ### 道具4：半分ずつ消す（二分探索）
 
@@ -740,7 +748,8 @@ no such column というエラー → DBをリセットしていなかった。A
 | `Cannot find module '○○'` | ファイル名や `require` のパスの綴り違い。または新しいパッケージを入れたのに `--build` していない |
 | `ReferenceError: ○○ is not defined`（画面が真っ白） | `.ejs` で使っている変数名が、`routes/` の `res.render('...', { ここ })` と違う |
 | `SQLITE_ERROR: ... columns but ... values` | INSERT の列の数と `?` の数が合っていない |
-| 保存したのに画面が変わらない | スーパーリロード（`Ctrl + Shift + R` / `Cmd + Shift + R`）。ターミナルに `Restarting` が出ているか確認 |
+| 保存したのに画面が変わらない | スーパーリロード（`Ctrl + Shift + R` / `Cmd + Shift + R`）。ターミナルに `[nodemon] restarting due to changes...` が出ているか確認 |
+| ファイルを保存しても再起動しない（Windows） | Windows 側のフォルダ（`C:\Users\...`）を Docker に共有していると、ファイルの変更通知が届かないことがある。このリポジトリは変更を「監視」ではなく「定期的に見に行く」方式（nodemon の `--legacy-watch`）にしてあるので通常は反映されるが、古い版を使っていて直らない場合は `docker compose restart app` で手動再起動するか、`git pull` して `docker compose up --build` で最新にする |
 | フォームの値が空で保存される | `<input name="○○">` と `req.body.○○` の綴りが違う |
 
 エラー文はそのまま AI に貼って「意味と、どのファイルを見ればいいか」を聞いて構いません。直すのは自分の手で。
