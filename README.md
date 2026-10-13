@@ -750,6 +750,8 @@ no such column というエラー → DBをリセットしていなかった。A
 | `SQLITE_ERROR: ... columns but ... values` | INSERT の列の数と `?` の数が合っていない |
 | 保存したのに画面が変わらない | スーパーリロード（`Ctrl + Shift + R` / `Cmd + Shift + R`）。ターミナルに `[nodemon] restarting due to changes...` が出ているか確認 |
 | ファイルを保存しても再起動しない（Windows） | Windows 側のフォルダ（`C:\Users\...`）を Docker に共有していると、ファイルの変更通知が届かないことがある。このリポジトリは変更を「監視」ではなく「定期的に見に行く」方式（nodemon の `--legacy-watch`）にしてあるので通常は反映されるが、古い版を使っていて直らない場合は `docker compose restart app` で手動再起動するか、`git pull` して `docker compose up --build` で最新にする |
+| `Error: Cannot find module` のあとに `better_sqlite3.node` と出る（Windows） | PC側で `npm install` したことがあり、Windows 用の `node_modules` がイメージに混ざった。`.dockerignore` で除外してあるので `docker compose up --build` で直る。それでも出るなら `node_modules` フォルダを削除してから `--build` |
+| `SQLITE_BUSY: database is locked`（Windows） | Windows の共有フォルダ上の SQLite で稀に起きる。アプリを止めて SQLite Viewer など DB を開いているツールを閉じ、`docker compose up` し直す |
 | フォームの値が空で保存される | `<input name="○○">` と `req.body.○○` の綴りが違う |
 
 エラー文はそのまま AI に貼って「意味と、どのファイルを見ればいいか」を聞いて構いません。直すのは自分の手で。
