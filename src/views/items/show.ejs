@@ -51,7 +51,7 @@
           <% if (loan.returned_on) { %>
             <%= loan.returned_on %>
           <% } else { %>
-            <span class="badge badge-lent">貸出中</span>
+            <span class="badge badge-lent"><%= statusLabels.lent %></span>
             <% if (loan.overdue) { %><span class="badge badge-overdue">延滞</span><% } %>
           <% } %>
         </td>

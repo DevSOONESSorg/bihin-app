@@ -35,7 +35,7 @@ router.get('/', (req, res) => {
     overdue: dates.isOverdue(loan.due_on, loan.returned_on),
   }));
 
-  res.render('loans/index', { title: onlyOverdue ? '延滞一覧' : '貸出中一覧', loans, onlyOverdue });
+  res.render('loans/index', { title: onlyOverdue ? '延滞一覧' : `${config.STATUS_LABELS.lent}一覧`, loans, onlyOverdue });
 });
 
 // ---------- 貸出登録 ----------
@@ -43,7 +43,7 @@ router.get('/new/:itemId', (req, res) => {
   const item = db.prepare('SELECT * FROM items WHERE id = ?').get(req.params.itemId);
   if (!item) return res.status(404).render('error', { title: '見つかりません', message: 'その備品はありません。' });
   if (item.status !== 'available') {
-    return res.redirect(`/items/${item.id}?msg=` + encodeURIComponent('在庫ありの備品だけ貸し出せます。'));
+    return res.redirect(`/items/${item.id}?msg=` + encodeURIComponent(`${config.STATUS_LABELS.available}の備品だけ貸し出せます。`));
   }
   const today = dates.today();
   res.render('loans/form', {

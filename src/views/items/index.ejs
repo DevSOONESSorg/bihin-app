@@ -3,7 +3,7 @@
 
 <div class="summary">
   <div class="stat"><span class="stat-num"><%= counts.total %></span>登録数</div>
-  <div class="stat"><span class="stat-num"><%= counts.lent %></span>貸出中</div>
+  <div class="stat"><span class="stat-num"><%= counts.lent %></span><%= statusLabels.lent %></div>
   <div class="stat <%= counts.overdue > 0 ? 'stat-danger' : '' %>"><span class="stat-num"><%= counts.overdue %></span>延滞</div>
 </div>
 

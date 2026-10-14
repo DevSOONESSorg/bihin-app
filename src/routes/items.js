@@ -137,7 +137,7 @@ router.post('/:id', (req, res) => {
   const errors = validateItem(req.body);
   // 貸出中の備品のステータスは、返却処理で戻すので手で変えられないようにする
   if (item.status === 'lent' && req.body.status !== 'lent') {
-    errors.push('貸出中の備品は、先に返却処理をしてください。');
+    errors.push(`${config.STATUS_LABELS.lent}の備品は、先に返却処理をしてください。`);
   }
   if (errors.length) {
     return res.status(400).render('items/form', {
@@ -164,7 +164,7 @@ router.post('/:id/delete', (req, res) => {
   const item = db.prepare('SELECT * FROM items WHERE id = ?').get(req.params.id);
   if (!item) return res.status(404).render('error', { title: '見つかりません', message: 'その備品はありません。' });
   if (item.status === 'lent') {
-    return res.redirect(`/items/${item.id}?msg=` + encodeURIComponent('貸出中の備品は削除できません。'));
+    return res.redirect(`/items/${item.id}?msg=` + encodeURIComponent(`${config.STATUS_LABELS.lent}の備品は削除できません。`));
   }
   db.prepare('DELETE FROM items WHERE id = ?').run(item.id); // 貸出履歴も一緒に消える（ON DELETE CASCADE）
   res.redirect('/items?msg=' + encodeURIComponent('備品を削除しました。'));
